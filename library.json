@@ -12,9 +12,9 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/khoih-prog/ESPAsync_WiFiManager"
+    "url": "https://github.com/Tomin123/ESPAsync_WiFiManager"
   },
-  "homepage": "https://github.com/khoih-prog/ESPAsync_WiFiManager",
+  "homepage": "https://github.com/Tomin123/ESPAsync_WiFiManager",
   "export": {
     "exclude": [
       "linux",
@@ -25,17 +25,17 @@
   "dependencies": [
     {
       "name": "AsyncTCP",
-      "version": "https://github.com/me-no-dev/AsyncTCP",
+      "version": "https://github.com/ESP32Async/AsyncTCP",
       "platforms": [ "espressif32"]
     },
     {
       "name": "ESPAsyncTCP",
-      "version": "https://github.com/khoih-prog/ESPAsyncTCP",
+      "version": "https://github.com/ESP32Async/ESPAsyncTCP",
       "platforms": [ "espressif8266"]
     },
     {
       "name": "ESP Async WebServer",
-      "version": "https://github.com/khoih-prog/ESPAsyncWebServer",
+      "version": "https://github.com/ESP32Async/ESPAsyncWebServer",
       "platforms": ["espressif8266", "espressif32"]
     },
     {
