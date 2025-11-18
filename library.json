@@ -25,7 +25,7 @@
   "dependencies": [
     {
       "name": "AsyncTCP",
-      "version": "https://github.com/ESP32Async/AsyncTCP",
+      "owner": "ESP32Async",
       "platforms": [ "espressif32"]
     },
     {
@@ -34,8 +34,8 @@
       "platforms": [ "espressif8266"]
     },
     {
-      "name": "ESP Async WebServer",
-      "version": "https://github.com/ESP32Async/ESPAsyncWebServer",
+      "name": "ESPAsyncWebServer",
+      "owner": "ESP32Async",
       "platforms": ["espressif8266", "espressif32"]
     },
     {

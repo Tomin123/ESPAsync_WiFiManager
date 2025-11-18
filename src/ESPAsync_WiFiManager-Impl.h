@@ -345,6 +345,11 @@ ESPAsync_WiFiManager::~ESPAsync_WiFiManager()
 
 //////////////////////////////////////////
 
+void ESPAsync_WiFiManager::setupWebServer() {
+	// "hook" for setup web server
+}
+
+
 void ESPAsync_WiFiManager::setupConfigPortal()
 {
   stopConfigPortal = false; //Signal not to close config portal
@@ -448,6 +453,8 @@ void ESPAsync_WiFiManager::setupConfigPortal()
   server->on("/fwlink",   std::bind(&ESPAsync_WiFiManager::handleRoot,        this,
                                     std::placeholders::_1)).setFilter(ON_AP_FILTER);
   server->onNotFound (std::bind(&ESPAsync_WiFiManager::handleNotFound,        this, std::placeholders::_1));
+
+  setupWebServer();
 
   server->begin(); // Web server start
 

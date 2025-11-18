@@ -887,7 +887,8 @@ class ESPAsync_WiFiManager
 
     char* getRFC952_hostname(const char* iHostname);
 
-    void          setupConfigPortal();
+    void          setupWebServer();
+	 void          setupConfigPortal();
     void          startWPS();
 
     const char*   _apName               = "no-net";
