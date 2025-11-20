@@ -345,7 +345,7 @@ ESPAsync_WiFiManager::~ESPAsync_WiFiManager()
 
 //////////////////////////////////////////
 
-void ESPAsync_WiFiManager::setupWebServer() {
+void ESPAsync_WiFiManager::onSetupWebServer(AsyncWebServer *server) {
 	// "hook" for setup web server
 }
 
@@ -454,7 +454,7 @@ void ESPAsync_WiFiManager::setupConfigPortal()
                                     std::placeholders::_1)).setFilter(ON_AP_FILTER);
   server->onNotFound (std::bind(&ESPAsync_WiFiManager::handleNotFound,        this, std::placeholders::_1));
 
-  setupWebServer();
+  onSetupWebServer(server);
 
   server->begin(); // Web server start
 
@@ -1520,7 +1520,7 @@ void ESPAsync_WiFiManager::handleWifi(AsyncWebServerRequest *request)
   page += FPSTR(WM_HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(WM_HTTP_HEAD_END);
-  page += F("<h2>Configuration</h2>");
+  page += F("<h2>Nastavení parametrů WiFi</h2>");
 
 #if !( USING_ESP32_S2 || USING_ESP32_C3 )
 
@@ -1531,7 +1531,7 @@ void ESPAsync_WiFiManager::handleWifi(AsyncWebServerRequest *request)
   {
     LOGDEBUG(F("handleWifi: No network found"));
 
-    page += F("No network found. Refresh to scan again.");
+    page += F("Žádná WiFi nenalezena. Stiskni >Obnovení< pro nové hledání.");
   }
   else
   {
@@ -1549,7 +1549,7 @@ void ESPAsync_WiFiManager::handleWifi(AsyncWebServerRequest *request)
 
 #endif    // ( USING_ESP32_S2 || USING_ESP32_C3 )
 
-  page += "<small>*Hint: To reuse the saved WiFi credentials, leave SSID and PWD fields empty</small>";
+  page += "<small>*Tip: pro ponechání původních uložených hodnot nastavení WiFi, ponechte pole SSID a Heslo prázdné</small>";
 
   page += FPSTR(WM_HTTP_FORM_START);
 
@@ -1654,7 +1654,7 @@ void ESPAsync_WiFiManager::handleWifi(AsyncWebServerRequest *request)
 
     item.replace("{i}", "gw");
     item.replace("{n}", "gw");
-    item.replace("{p}", "Gateway IP");
+    item.replace("{p}", "Brána IP");
     item.replace("{l}", "15");
     item.replace("{v}", _WiFi_STA_IPconfig._sta_static_gw.toString());
 
@@ -1665,7 +1665,7 @@ void ESPAsync_WiFiManager::handleWifi(AsyncWebServerRequest *request)
 
     item.replace("{i}", "sn");
     item.replace("{n}", "sn");
-    item.replace("{p}", "Subnet");
+    item.replace("{p}", "Maska");
     item.replace("{l}", "15");
     item.replace("{v}", _WiFi_STA_IPconfig._sta_static_sn.toString());
 
@@ -1831,7 +1831,7 @@ void ESPAsync_WiFiManager::handleWifiSave(AsyncWebServerRequest *request)
 #endif
 
   String page = FPSTR(WM_HTTP_HEAD_START);
-  page.replace("{v}", "Credentials Saved");
+  page.replace("{v}", "Nastavení WiFi uloženo");
 
   page += FPSTR(WM_HTTP_SCRIPT);
   page += FPSTR(WM_HTTP_STYLE);
@@ -1882,20 +1882,20 @@ void ESPAsync_WiFiManager::handleServerClose(AsyncWebServerRequest *request)
   LOGDEBUG(F("Server Close"));
 
   String page = FPSTR(WM_HTTP_HEAD_START);
-  page.replace("{v}", "Close Server");
+  page.replace("{v}", "Ukončení konfig. WiFi");
 
   page += FPSTR(WM_HTTP_SCRIPT);
   page += FPSTR(WM_HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(WM_HTTP_HEAD_END);
   page += F("<div class=\"msg\">");
-  page += F("My network is <b>");
+  page += F("Moje síť je <b>");
   page += WiFi_SSID();
   page += F("</b><br>");
-  page += F("IP address is <b>");
+  page += F("IP adresa je <b>");
   page += WiFi.localIP().toString();
   page += F("</b><br><br>");
-  page += F("Portal closed...<br><br>");
+  page += F("Nastav. portál uzavřen...<br><br>");
 
   //page += F("Push button on device to restart configuration server!");
 
@@ -1954,18 +1954,18 @@ void ESPAsync_WiFiManager::handleInfo(AsyncWebServerRequest *request)
 
   if (connect)
   {
-    page += F("<dt>Trying to connect</dt><dd>");
+    page += F("<dt>Zkouším spojení na</dt><dd>");
     page += wifiStatus;
     page += F("</dd>");
   }
 
   page += pager;
-  page += F("<h2>WiFi Information</h2>");
+  page += F("<h2>Informace o WiFi</h2>");
 
   reportStatus(page);
 
   page += FPSTR(WM_FLDSET_START);
-  page += F("<h3>Device Data</h3>");
+  page += F("<h3>Informace o zařízení</h3>");
   page += F("<table class=\"table\">");
   page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>Chip ID</td><td>");
 
@@ -2015,11 +2015,11 @@ void ESPAsync_WiFiManager::handleInfo(AsyncWebServerRequest *request)
 
   page += F(" bytes</td></tr>");
 
-  page += F("<tr><td>Access Point IP</td><td>");
+  page += F("<tr><td>Přístupový bod IP</td><td>");
   page += WiFi.softAPIP().toString();
   page += F("</td></tr>");
 
-  page += F("<tr><td>Access Point MAC</td><td>");
+  page += F("<tr><td>Přístupový bod MAC</td><td>");
   page += WiFi.softAPmacAddress();
   page += F("</td></tr>");
 
@@ -2027,11 +2027,11 @@ void ESPAsync_WiFiManager::handleInfo(AsyncWebServerRequest *request)
   page += WiFi_SSID();
   page += F("</td></tr>");
 
-  page += F("<tr><td>Station IP</td><td>");
+  page += F("<tr><td>IP zařízení</td><td>");
   page += WiFi.localIP().toString();
   page += F("</td></tr>");
 
-  page += F("<tr><td>Station MAC</td><td>");
+  page += F("<tr><td>MAC zařízení</td><td>");
   page += WiFi.macAddress();
   page += F("</td></tr>");
   page += F("</tbody></table>");
@@ -2044,8 +2044,8 @@ void ESPAsync_WiFiManager::handleInfo(AsyncWebServerRequest *request)
   page += FPSTR(WM_FLDSET_END);
 #endif
 
-  page += F("<p/>More information about ESPAsync_WiFiManager at");
-  page += F("<p/><a href=\"https://github.com/khoih-prog/ESPAsync_WiFiManager\">https://github.com/khoih-prog/ESPAsync_WiFiManager</a>");
+//   page += F("<p/>More information about ESPAsync_WiFiManager at");
+//   page += F("<p/><a href=\"https://github.com/khoih-prog/ESPAsync_WiFiManager\">https://github.com/khoih-prog/ESPAsync_WiFiManager</a>");
   page += FPSTR(WM_HTTP_END);
 
 #if ( USING_ESP32_S2 || USING_ESP32_C3 )
@@ -2217,13 +2217,13 @@ void ESPAsync_WiFiManager::handleReset(AsyncWebServerRequest *request)
   LOGDEBUG(F("Reset"));
 
   String page = FPSTR(WM_HTTP_HEAD_START);
-  page.replace("{v}", "WiFi Information");
+  page.replace("{v}", "Informace o WiFi");
 
   page += FPSTR(WM_HTTP_SCRIPT);
   page += FPSTR(WM_HTTP_STYLE);
   page += _customHeadElement;
   page += FPSTR(WM_HTTP_HEAD_END);
-  page += F("Resetting");
+  page += F("Resetuji ...");
   page += FPSTR(WM_HTTP_END);
 
 #if ( USING_ESP32_S2 || USING_ESP32_C3 )
@@ -2259,44 +2259,54 @@ void ESPAsync_WiFiManager::handleReset(AsyncWebServerRequest *request)
 
 //////////////////////////////////////////
 
-void ESPAsync_WiFiManager::handleNotFound(AsyncWebServerRequest *request)
+void ESPAsync_WiFiManager::handleNotFound(AsyncWebServerRequest* request)
 {
-  if (captivePortal(request))
-  {
-    // If captive portal redirect instead of displaying the error page.
-    return;
-  }
+	Serial.println(F("WM handleNotFound"));
+	Serial.println(request->host());
+	Serial.println(request->url());
 
-  String message = "File Not Found\n\n";
+	if (captivePortal(request)) {
+		// If captive portal redirect instead of displaying the error page.
+		return;
+	}
 
-  message += "URI: ";
-  message += request->url();
-  message += "\nMethod: ";
-  message += (request->method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += request->args();
-  message += "\n";
+	DebugPrint("neosetreno v captive !");
+	DebugPrint(" url:", request->url());
 
-  for (uint8_t i = 0; i < request->args(); i++)
-  {
-    message += " " + request->argName(i) + ": " + request->arg(i) + "\n";
-  }
+	String message = "File Not Found\n\n";
 
-#if ( USING_ESP32_S2 || USING_ESP32_C3 )
-  request->send(200, WM_HTTP_HEAD_CT, message);
+	message += "URI: ";
+	message += request->url();
+	message += "\nMethod: ";
+	message += (request->method() == HTTP_GET) ? "GET" : "POST";
+	message += "\nArguments: ";
+	message += request->args();
+	message += "\n";
 
-  // Fix ESP32-S2 issue with WebServer (https://github.com/espressif/arduino-esp32/issues/4348)
-  delay(1);
-#else
+	for (uint8_t i = 0; i < request->args(); i++) {
+		message += " " + request->argName(i) + ": " + request->arg(i) + "\n";
+	}
 
-  AsyncWebServerResponse *response = request->beginResponse( 404, WM_HTTP_HEAD_CT2, message );
+	#if (USING_ESP32_S2 || USING_ESP32_C3)
+	request->send(200, WM_HTTP_HEAD_CT, message);
 
-  response->addHeader(FPSTR(WM_HTTP_CACHE_CONTROL), FPSTR(WM_HTTP_NO_STORE));
-  response->addHeader(FPSTR(WM_HTTP_PRAGMA), FPSTR(WM_HTTP_NO_CACHE));
-  response->addHeader(FPSTR(WM_HTTP_EXPIRES), "-1");
+	// Fix ESP32-S2 issue with WebServer
+	// (https://github.com/espressif/arduino-esp32/issues/4348)
+	delay(1);
+	#else
 
-  request->send(response);
-#endif    // ( USING_ESP32_S2 || USING_ESP32_C3 )
+	AsyncWebServerResponse* response = request->beginResponse(404, WM_HTTP_HEAD_CT2, message);
+
+	response->addHeader(FPSTR(WM_HTTP_CACHE_CONTROL), FPSTR(WM_HTTP_NO_STORE));
+	response->addHeader(FPSTR(WM_HTTP_PRAGMA), FPSTR(WM_HTTP_NO_CACHE));
+	response->addHeader(FPSTR(WM_HTTP_EXPIRES), "-1");
+
+	// z IDF examplu:
+	// iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
+   //  httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
+
+	request->send(response);
+	#endif // ( USING_ESP32_S2 || USING_ESP32_C3 )
 }
 
 //////////////////////////////////////////
@@ -2306,25 +2316,33 @@ void ESPAsync_WiFiManager::handleNotFound(AsyncWebServerRequest *request)
    Redirect to captive portal if we got a request for another domain.
    Return true in that case so the page handler do not try to handle the request again.
 */
-bool ESPAsync_WiFiManager::captivePortal(AsyncWebServerRequest *request)
+bool ESPAsync_WiFiManager::captivePortal(AsyncWebServerRequest* request)
 {
-  if (!isIp(request->host()))
-  {
-    LOGINFO(F("Request redirected to captive portal"));
-    LOGINFO1(F("Location http://"), toStringIp(request->client()->localIP()));
+	LOGINFO1(F("request->host():"), request->host());
 
-    AsyncWebServerResponse *response = request->beginResponse(302, WM_HTTP_HEAD_CT2, "");
+	if (!isIp(request->host())) {
+		const String sDestiURL = String("http://") + toStringIp(request->client()->localIP());
+		
+		LOGINFO(F("Request redirected to captive portal"));
+		LOGINFO1(F("Location"), sDestiURL);
 
-    response->addHeader("Location", String("http://") + toStringIp(request->client()->localIP()));
+		// example IDF rika:
+		// iOS requires content in the response to detect a captive portal, simply redirecting is not
+		// sufficient.
+		const String sDataForiOS = "Redirect to the captive portal";
 
-    request->send(response);
+		// example od IDF pouziva kod 303, nepomuze to ? - testovano, nepomuze
+		AsyncWebServerResponse* response = request->beginResponse(302, WM_HTTP_HEAD_CT2, sDataForiOS);
 
-    return true;
-  }
+		response->addHeader("Location", sDestiURL);
+		request->send(response);
 
-  LOGDEBUG1(F("request host IP ="), request->host());
+		return true;
+	}
 
-  return false;
+	LOGDEBUG1(F("Request NON redirected, request host IP ="), request->host());
+
+	return false;
 }
 
 //////////////////////////////////////////

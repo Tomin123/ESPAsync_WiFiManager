@@ -324,7 +324,7 @@ typedef struct
 //KH
 // Mofidy HTTP_HEAD to WM_HTTP_HEAD_START to avoid conflict in Arduino esp8266 core 2.6.0+
 const char WM_HTTP_200[] PROGMEM            = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-const char WM_HTTP_HEAD_START[] PROGMEM     = "<!DOCTYPE html><html lang='en'><head><meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/><title>{v}</title>";
+const char WM_HTTP_HEAD_START[] PROGMEM     = "<!DOCTYPE html><html lang='cs'><head><meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/><title>{v}</title>";
 
 ////////////////////////////////////////////////////
 
@@ -349,7 +349,7 @@ const char WM_HTTP_SCRIPT[] PROGMEM = "<script>function c(l){document.getElement
 
 #include "utils/TZ.h"
 
-const char WM_HTTP_SCRIPT_NTP_MSG[] PROGMEM = "<p>Your Timezone is : <b><label id='timezone' name='timezone'></b><script>document.getElementById('timezone').innerHTML=timezone.name();document.getElementById('timezone').value=timezone.name();</script></p>";
+const char WM_HTTP_SCRIPT_NTP_MSG[] PROGMEM = "<p>Časová zóna: <b><label id='timezone' name='timezone'></b><script>document.getElementById('timezone').innerHTML=timezone.name();document.getElementById('timezone').value=timezone.name();</script></p>";
 const char WM_HTTP_SCRIPT_NTP_HIDDEN[] PROGMEM = "<p><input type='hidden' id='timezone' name='timezone'><script>document.getElementById('timezone').innerHTML=timezone.name();document.getElementById('timezone').value=timezone.name();</script></p>";
 
 ////////////////////////////////////////////////////
@@ -395,9 +395,9 @@ const char WM_FLDSET_END[]    PROGMEM = "</fieldset>";
 
 ////////////////////////////////////////////////////
 
-const char WM_HTTP_PORTAL_OPTIONS[] PROGMEM = "<form action='/wifi' method='get'><button class='btn'>Configuration</button></form><br/><form action='/i' method='get'><button class='btn'>Information</button></form><br/><form action='/close' method='get'><button class='btn'>Exit Portal</button></form><br/>";
+const char WM_HTTP_PORTAL_OPTIONS[] PROGMEM = "<form action='/wifi' method='get'><button class='btn'>Nastavení WiFi</button></form><br/><form action='/i' method='get'><button class='btn'>Information</button></form><br/><form action='/close' method='get'><button class='btn'>Ukončit nastavení</button></form><br/>";
 const char WM_HTTP_ITEM[] PROGMEM = "<div><a href='#p' onclick='c(this)'>{v}</a>&nbsp;<span class='q {i}'>{r}%</span></div>";
-const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Encryption\":{i}, \"Quality\":\"{r}\"}";
+const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Šifrování\":{i}, \"Kvalita\":\"{r}\"}";
 
 ////////////////////////////////////////////////////
 
@@ -412,9 +412,9 @@ const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Encryption\":{i}, \"Qu
 #endif
 
 #if DISPLAY_STORED_CREDENTIALS_IN_CP
-const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input value='[[ssid]]' id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Password</label><input value='[[pwd]]' id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input value='[[ssid1]]' id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Password</label><input value='[[pwd1]]' id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
+const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input value='[[ssid]]' id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Heslo</label><input value='[[pwd]]' id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input value='[[ssid1]]' id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Heslo</label><input value='[[pwd1]]' id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
 #else
-const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Password</label><input id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Password</label><input id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
+const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Heslo</label><input id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Heslo</label><input id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
 #endif
 
 ////////////////////////////////////////////////////
@@ -427,11 +427,11 @@ const char WM_HTTP_FORM_LABEL_AFTER[]   PROGMEM   = "<div><input id='{i}' name='
 const char WM_HTTP_FORM_LABEL[] PROGMEM = "<label for='{i}'>{p}</label>";
 const char WM_HTTP_FORM_PARAM[] PROGMEM = "<input id='{i}' name='{n}' length={l} placeholder='{p}' value='{v}' {c}>";
 
-const char WM_HTTP_FORM_END[] PROGMEM = "<button class='btn' type='submit'>Save</button></form>";
+const char WM_HTTP_FORM_END[] PROGMEM = "<button class='btn' type='submit'>Uložit</button></form>";
 
 ////////////////////////////////////////////////////
 
-const char WM_HTTP_SAVED[] PROGMEM = "<div class='msg'><b>Credentials Saved</b><br>Try connecting ESP to the {x}/{x1} network. Wait around 10 seconds then check <a href='/'>if it's OK.</a> <p/>The {v} AP will run on the same WiFi channel of the {x}/{x1} AP. You may have to manually reconnect to the {v} AP.</div>";
+const char WM_HTTP_SAVED[] PROGMEM = "<div class='msg'><b>Nastavení uloženo</b><br>Po restaru v menu zařízení povol/zapni položku Nastavení-Síť-Wifi a nastavení sítě bude kompletní. Triton se pak bude pokoušet spojina na síť {x}/{x1}. Počkej 10 sec. a pak můžes zkontrolovat stav na <a href='/'>zda je vše OK.</a><p/></div>";
 
 ////////////////////////////////////////////////////
 
@@ -457,7 +457,7 @@ const char WM_HTTP_CORS_ALLOW_ALL[]  = "*";
 ////////////////////////////////////////////////////
 
 #if USE_AVAILABLE_PAGES
-  const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "<h3>Available Pages</h3><table class='table'><thead><tr><th>Page</th><th>Function</th></tr></thead><tbody><tr><td><a href='/'>/</a></td><td>Menu page.</td></tr><tr><td><a href='/wifi'>/wifi</a></td><td>Enter WiFi Config Page with scan results.</td></tr><tr><td><a href='/wifisave'>/wifisave</a></td><td>Save Config. Portal Info with supplied variables.</td></tr><tr><td><a href='/close'>/close</a></td><td>Close the Config Portal.</td></tr><tr><td><a href='/i'>/i</a></td><td>This Info page.</td></tr><tr><td><a href='/r'>/r</a></td><td>Delete WiFi configuration and reboot. ESP device will not reconnect to a network until new WiFi configuration data is entered.</td></tr><tr><td><a href='/state'>/state</a></td><td>Current device state in JSON format. Interface for programmatic WiFi configuration.</td></tr><tr><td><a href='/scan'>/scan</a></td><td>Run a WiFi scan and return results in JSON format. Interface for programmatic WiFi configuration.</td></tr></table>";
+  const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "<h3>Dostupné stránky:</h3><table class='table'><thead><tr><th>Page</th><th>Function</th></tr></thead><tbody><tr><td><a href='/'>/</a></td><td>Menu</td></tr><tr><td><a href='/wifi'>/wifi</a></td><td>Nastavení přihlaš.údajů WiFi</td></tr><tr><td><a href='/wifisave'>/wifisave</a></td><td>Uložení údajů</td></tr><tr><td><a href='/close'>/close</a></td><td>Ukončení nastav.portálu</td></tr><tr><td><a href='/i'>/i</a></td><td>Tato info stránka</td></tr><tr><td><a href='/r'>/r</a></td><td>Smazání nastavení WiFi + restart zařízení. Zařízení se nebude připojovat k žádné WiFi dokud nebudou znovu hodnoty nastaveny.</td></tr><tr><td><a href='/state'>/state</a></td><td>Aktuální nastavení WiFi údajů ve formátu JSON</td></tr><tr><td><a href='/scan'>/scan</a></td><td>Spuštění hledání dostupných WiFi sítí + údaje v JSON formátu.</td></tr></table>";
 #else
   const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "";
 #endif
@@ -646,6 +646,10 @@ class ESPAsync_WiFiManager
     
     //if this is true, remove duplicated Access Points - defaut true
     void          setRemoveDuplicateAPs(bool removeDuplicates);
+
+	// TomCh
+	 // called when web server is setuped
+	virtual void   onSetupWebServer(AsyncWebServer *server);		// hook
 
 ////////////////////////////////////////////////////
 
@@ -886,8 +890,7 @@ class ESPAsync_WiFiManager
     char RFC952_hostname[RFC952_HOSTNAME_MAXLEN + 1];
 
     char* getRFC952_hostname(const char* iHostname);
-
-    void          setupWebServer();
+	 
 	 void          setupConfigPortal();
     void          startWPS();
 
