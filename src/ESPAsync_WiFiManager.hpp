@@ -420,18 +420,18 @@ const char scriptToJumpToRootPage[] PROGMEM = R"(
 			const countdownElem = document.getElementById("countdown");
 
 			const intervalId = setInterval(function() {
-				countdownElem.textContent = "Nastav.portál se ukončuje " + remaining;
+				countdownElem.textContent = "Nastav.portál se ukončuje ... " + remaining + " sek.";
 				remaining--;
 
-				if (remaining < 0) {
+				if (remaining <= 0) {
 					clearInterval(intervalId);
-					window.location.href = "triton.local"; // root webu
+					window.location.href = "http://triton.local"; // root webu
 				}
 			}, 1000); // aktualizace každou sekundu
 		}
 
 		window.onload = function() {
-			autoRedirectWithCountdown(30); // [sekund]
+			autoRedirectWithCountdown(20); // [sekund]
 		};
 	</script>
 	<div id="countdown"></div>
@@ -472,7 +472,7 @@ const char WM_HTTP_SAVED[] PROGMEM = "<div class='msg'><b>Nastavení uloženo</b
 
 ////////////////////////////////////////////////////
 
-const char WM_HTTP_END[] PROGMEM = "</div></body></html>";
+const char WM_HTTP_END[] PROGMEM = "</div></div></div></body></html>";
 
 ////////////////////////////////////////////////////
 

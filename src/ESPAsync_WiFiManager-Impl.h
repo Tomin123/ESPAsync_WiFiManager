@@ -894,6 +894,17 @@ bool ESPAsync_WiFiManager::startConfigPortal(char const* apName, char const* apP
 			LOGERROR("Stop ConfigPortal");
 
 			stopConfigPortal = false;
+
+			// TomCh - pridano zpozdeni
+			// stranka s potvrzeni ukonceni uz se nestacila odeslat v serveru
+			unsigned long mil = millis();
+			while (mil+2000 > millis()) {
+				yield();
+				delay(1);
+				esp_task_wdt_reset();
+			}
+
+
 			//--------------
 			break;
 			//--------------
@@ -1761,7 +1772,6 @@ void ESPAsync_WiFiManager::handleWifiSave(AsyncWebServerRequest* request) {
 
 	page += FPSTR(WM_HTTP_SCRIPT);
 	page += FPSTR(WM_HTTP_STYLE);
-
 	page += FPSTR(countdownStyle);
 	page += _customHeadElement;
 	page += FPSTR(WM_HTTP_HEAD_END);
@@ -1819,7 +1829,6 @@ void ESPAsync_WiFiManager::handleServerClose(AsyncWebServerRequest* request) {
 
 	String page = FPSTR(WM_HTTP_HEAD_START);
 	page.replace("{v}", "Ukončení konfig. WiFi");
-
 	
 	page += FPSTR(WM_HTTP_SCRIPT);
 	page += FPSTR(WM_HTTP_STYLE);
@@ -1841,6 +1850,8 @@ void ESPAsync_WiFiManager::handleServerClose(AsyncWebServerRequest* request) {
 
 	page += FPSTR(WM_HTTP_END);
 
+	DebugPrint(page);
+
 	#if (USING_ESP32_S2 || USING_ESP32_C3)
 	request->send(200, WM_HTTP_HEAD_CT, page);
 
@@ -1861,14 +1872,6 @@ void ESPAsync_WiFiManager::handleServerClose(AsyncWebServerRequest* request) {
 	request->send(response);
 
 	#endif // ( USING_ESP32_S2 || USING_ESP32_C3 )
-
-	// TomCh - pridano zpozdeni
-	// stranka s potvrzeni ukonceni uz se nestacila odeslat v serveru
-	unsigned long mil = millis();
-	while (millis()+2000 > mil) {
-		yield();
-		esp_task_wdt_reset();
-	}
 
 	stopConfigPortal = true; // signal ready to shutdown config portal
 
