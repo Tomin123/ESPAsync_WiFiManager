@@ -25,7 +25,7 @@
   "dependencies": [
     {
       "name": "AsyncTCP",
-      "owner": "mathieucarbou",
+      "owner": "ESP32Async",
       "platforms": [ "espressif32"]
     },
     {
@@ -35,7 +35,7 @@
     },
     {
       "name": "ESPAsyncWebServer",
-      "owner": "mathieucarbou",
+      "owner": "ESP32Async",
       "platforms": ["espressif8266", "espressif32"]
     },
     {

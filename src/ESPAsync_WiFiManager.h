@@ -38,6 +38,9 @@
 #ifndef ESPAsync_WiFiManager_h
 #define ESPAsync_WiFiManager_h
 
+#include <Arduino.h>
+#include <esp_task_wdt.h>
+
 #include <ESPAsync_WiFiManager.hpp>              //https://github.com/khoih-prog/ESPAsync_WiFiManager
 #include <ESPAsync_WiFiManager-Impl.h>           //https://github.com/khoih-prog/ESPAsync_WiFiManager
 

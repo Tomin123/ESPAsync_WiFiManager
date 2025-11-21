@@ -38,6 +38,8 @@
 #ifndef ESPAsync_WiFiManager_hpp
 #define ESPAsync_WiFiManager_hpp
 
+#include <Arduino.h>
+
 ////////////////////////////////////////////////////
 
 #if !( defined(ESP8266) ||  defined(ESP32) )
@@ -324,7 +326,8 @@ typedef struct
 //KH
 // Mofidy HTTP_HEAD to WM_HTTP_HEAD_START to avoid conflict in Arduino esp8266 core 2.6.0+
 const char WM_HTTP_200[] PROGMEM            = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-const char WM_HTTP_HEAD_START[] PROGMEM     = "<!DOCTYPE html><html lang='cs'><head><meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/><title>{v}</title>";
+const char WM_HTTP_HEAD_START[] PROGMEM     = "<!DOCTYPE html><html lang='cs'><head><meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'/><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>{v}</title>";
+
 
 ////////////////////////////////////////////////////
 
@@ -395,11 +398,45 @@ const char WM_FLDSET_END[]    PROGMEM = "</fieldset>";
 
 ////////////////////////////////////////////////////
 
-const char WM_HTTP_PORTAL_OPTIONS[] PROGMEM = "<form action='/wifi' method='get'><button class='btn'>Nastavení WiFi</button></form><br/><form action='/i' method='get'><button class='btn'>Information</button></form><br/><form action='/close' method='get'><button class='btn'>Ukončit nastavení</button></form><br/>";
+const char WM_HTTP_PORTAL_OPTIONS[] PROGMEM = "<form action='/wifi' method='get'><button class='btn'>Nastavení WiFi</button></form><br/><form action='/i' method='get'><button class='btn'>Informace</button></form><br/><form action='/close' method='get'><button class='btn'>Ukončit nastavení</button></form><br/>";
 const char WM_HTTP_ITEM[] PROGMEM = "<div><a href='#p' onclick='c(this)'>{v}</a>&nbsp;<span class='q {i}'>{r}%</span></div>";
-const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Šifrování\":{i}, \"Kvalita\":\"{r}\"}";
+const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Encryption\":{i}, \"Quality\":\"{r}\"}";
 
 ////////////////////////////////////////////////////
+
+const char countdownStyle[] PROGMEM = R"(
+	<style>
+	#countdown {
+		font-size: 20px;
+		font-weight: bold;
+		margin: 20px;
+	}
+	</style>
+)";
+const char scriptToJumpToRootPage[] PROGMEM = R"(
+	<script>
+		function autoRedirectWithCountdown(seconds) {
+			let remaining = seconds;
+			const countdownElem = document.getElementById("countdown");
+
+			const intervalId = setInterval(function() {
+				countdownElem.textContent = "Nastav.portál se ukončuje " + remaining;
+				remaining--;
+
+				if (remaining < 0) {
+					clearInterval(intervalId);
+					window.location.href = "triton.local"; // root webu
+				}
+			}, 1000); // aktualizace každou sekundu
+		}
+
+		window.onload = function() {
+			autoRedirectWithCountdown(30); // [sekund]
+		};
+	</script>
+	<div id="countdown"></div>
+)";
+
 
 // KH, update from v1.15.0
 // To permit display stored Credentials on CP
@@ -412,7 +449,7 @@ const char JSON_ITEM[] PROGMEM    = "{\"SSID\":\"{v}\", \"Šifrování\":{i}, \"
 #endif
 
 #if DISPLAY_STORED_CREDENTIALS_IN_CP
-const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input value='[[ssid]]' id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Heslo</label><input value='[[pwd]]' id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input value='[[ssid1]]' id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Heslo</label><input value='[[pwd1]]' id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
+const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID (preferovaný)</label><input value='[[ssid]]' id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Heslo</label><input value='[[pwd]]' id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID (záložní)</label><input value='[[ssid1]]' id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Heslo</label><input value='[[pwd1]]' id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
 #else
 const char WM_HTTP_FORM_START[] PROGMEM = "<form method='get' action='wifisave'><fieldset><div><label>SSID</label><input id='s' name='s' length=32 placeholder='SSID'><div></div></div><div><label>Heslo</label><input id='p' name='p' length=64 placeholder='password'><div></div></div><div><label>SSID1</label><input id='s1' name='s1' length=32 placeholder='SSID1'><div></div></div><div><label>Heslo</label><input id='p1' name='p1' length=64 placeholder='password1'><div></div></div></fieldset>";
 #endif
@@ -431,7 +468,7 @@ const char WM_HTTP_FORM_END[] PROGMEM = "<button class='btn' type='submit'>Ulož
 
 ////////////////////////////////////////////////////
 
-const char WM_HTTP_SAVED[] PROGMEM = "<div class='msg'><b>Nastavení uloženo</b><br>Po restaru v menu zařízení povol/zapni položku Nastavení-Síť-Wifi a nastavení sítě bude kompletní. Triton se pak bude pokoušet spojina na síť {x}/{x1}. Počkej 10 sec. a pak můžes zkontrolovat stav na <a href='/'>zda je vše OK.</a><p/></div>";
+const char WM_HTTP_SAVED[] PROGMEM = "<div class='msg'><b>Nastavení uloženo</b><br>Do pár sekund proběhne restart zařízení.<br>Po proběhnutí restartu povol/zapni v menu položku Nastavení->Síť WiFi->Wifi: Zapnuto a nastavení sítě bude kompletní. Triton se pak bude pokoušet spojit na síť {x} nebo {x1}.<br></div>";
 
 ////////////////////////////////////////////////////
 
@@ -457,7 +494,7 @@ const char WM_HTTP_CORS_ALLOW_ALL[]  = "*";
 ////////////////////////////////////////////////////
 
 #if USE_AVAILABLE_PAGES
-  const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "<h3>Dostupné stránky:</h3><table class='table'><thead><tr><th>Page</th><th>Function</th></tr></thead><tbody><tr><td><a href='/'>/</a></td><td>Menu</td></tr><tr><td><a href='/wifi'>/wifi</a></td><td>Nastavení přihlaš.údajů WiFi</td></tr><tr><td><a href='/wifisave'>/wifisave</a></td><td>Uložení údajů</td></tr><tr><td><a href='/close'>/close</a></td><td>Ukončení nastav.portálu</td></tr><tr><td><a href='/i'>/i</a></td><td>Tato info stránka</td></tr><tr><td><a href='/r'>/r</a></td><td>Smazání nastavení WiFi + restart zařízení. Zařízení se nebude připojovat k žádné WiFi dokud nebudou znovu hodnoty nastaveny.</td></tr><tr><td><a href='/state'>/state</a></td><td>Aktuální nastavení WiFi údajů ve formátu JSON</td></tr><tr><td><a href='/scan'>/scan</a></td><td>Spuštění hledání dostupných WiFi sítí + údaje v JSON formátu.</td></tr></table>";
+  const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "<h3>Dostupné stránky:</h3><table class='table'><thead><tr><th>Page</th><th>Function</th></tr></thead><tbody><tr><td><a href='/'>/</a></td><td>Menu</td></tr><tr><td><a href='/wifi'>/wifi</a></td><td>Nastavení přihlašovacích údajů WiFi</td></tr><tr><td><a href='/wifisave'>/wifisave</a></td><td>Uložení údajů</td></tr><tr><td><a href='/close'>/close</a></td><td>Ukončení nastavovacího portálu</td></tr><tr><td><a href='/i'>/i</a></td><td>Tato info stránka</td></tr><tr><td><a href='/r'>/r</a></td><td>Smazání nastavení WiFi + restart zařízení. Zařízení se nebude připojovat k žádné WiFi dokud nebudou znovu hodnoty nastaveny.</td></tr><tr><td><a href='/state'>/state</a></td><td>Aktuální nastavení WiFi údajů ve formátu JSON</td></tr><tr><td><a href='/scan'>/scan</a></td><td>Spuštění hledání dostupných WiFi sítí + údaje v JSON formátu.</td></tr></table>";
 #else
   const char WM_HTTP_AVAILABLE_PAGES[] PROGMEM = "";
 #endif
@@ -647,9 +684,20 @@ class ESPAsync_WiFiManager
     //if this is true, remove duplicated Access Points - defaut true
     void          setRemoveDuplicateAPs(bool removeDuplicates);
 
-	// TomCh
+	// TomCh, hooks
 	 // called when web server is setuped
-	virtual void   onSetupWebServer(AsyncWebServer *server);		// hook
+	virtual void onSetupWebServer(AsyncWebServer *server);	
+	virtual void onPortalSetup() {};
+	virtual void onPortalStart() {};
+	virtual void onActivePortalLoop() {};
+	// WiFi scanning
+	virtual void onScanWifis() {};
+	virtual void onScanWifisFinish() {};
+
+
+	void setStopConfigPortal(bool value) {
+		stopConfigPortal = value;
+	}
 
 ////////////////////////////////////////////////////
 
@@ -983,8 +1031,8 @@ class ESPAsync_WiFiManager
     bool          isIp(const String& str);
     String        toStringIp(const IPAddress& ip);
 
-    bool          connect;
-    bool          stopConfigPortal = false;
+    bool          connect;				//signal ready to connect/reset
+    bool          stopConfigPortal = false;		// flag pro ukonceni portalu
     
     bool          _debug = false;     //true;
     
